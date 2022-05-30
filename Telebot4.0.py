@@ -136,110 +136,6 @@ def get_messages(message):
 
 # -----------------------------------------------------------------------
 # Получение сообщений от юзера
-# @bot.message_handler(content_types=['text'])
-# def get_text_messages(message):
-#
-#     chat_id = message.chat.id
-#     ms_text = message.text
-#
-#     cur_user = Users.getUser(chat_id)
-#     if cur_user == None:
-#         cur_user = Users(chat_id, message.json["from"])
-#
-#     result = goto_menu(chat_id, ms_text)  # попытаемся использовать текст как команду меню, и войти в него
-#     if result == True:
-#         return  # мы вошли в подменю, и дальнейшая обработка не требуется
-#
-#     cur_menu = Menu.getCurMenu(chat_id)
-#     if cur_menu != None and ms_text in cur_menu.buttons:  # проверим, что команда относится к текущему меню
-#
-#         if ms_text == "Помощь":
-#             send_help(chat_id)
-#
-#         elif ms_text == "Прислать аниме":
-#             bot.send_photo(chat_id, photo=get_animeURL(), caption="UwU!")
-#
-#         elif ms_text == "Прислать анекдот":
-#             bot.send_message(chat_id, text=get_anekdot())
-#
-#         elif ms_text == "Wikipedia":
-#             msg = bot.send_message(chat_id, 'Отправьте любое слово, и я найду его значение на wikipedia')
-#             bot.register_next_step_handler(msg, wiki_step)
-#
-#         elif ms_text == "Прислать фильм":
-#             send_film(chat_id)
-#
-#         elif ms_text == "Угадай кто?":
-#             get_ManOrNot(chat_id)
-#
-#         elif ms_text == "Города":
-#             gamesity = BotGames.getGame(chat_id)
-#             if gamesity == None:
-#                 goto_menu(chat_id, "Выход")
-#                 return
-#
-#
-#
-#         elif ms_text == "Карту!":
-#             game21 = BotGames.getGame(chat_id)
-#             if game21 == None:  # если мы случайно попали в это меню, а объекта с игрой нет
-#                 goto_menu(chat_id, "Выход")
-#                 return
-#
-#             text_game = game21.get_cards(1)
-#             bot.send_media_group(chat_id, media=getMediaCards(game21))  # получим и отправим изображения карт
-#             bot.send_message(chat_id, text=text_game)
-#
-#             if game21.status != None:  # выход, если игра закончена
-#                 BotGames.stopGame(chat_id)
-#                 goto_menu(chat_id, "Выход")
-#                 return
-#
-#         elif ms_text == "Стоп!":
-#             BotGames.stopGame(chat_id)
-#             goto_menu(chat_id, "Выход")
-#             return
-#
-#
-#         elif ms_text in BotGames.GameRPS.values:  # реализация игрыы Камень-ножницы-бумага
-#             gameRSP = BotGames.getGame(chat_id)
-#             if gameRSP == None:  # если мы случайно попали в это меню, а объекта с игрой нет
-#                 goto_menu(chat_id, "Выход")
-#                 return
-#             text_game = gameRSP.playerChoice(ms_text)
-#             bot.send_message(chat_id, text=text_game)
-#             gameRSP.newGame()
-#
-#         elif ms_text == "Задание-1":
-#             DZ.dz1(bot, chat_id)
-#
-#         elif ms_text == "Задание-2":
-#             DZ.dz2(bot, chat_id)
-#
-#         elif ms_text == "Задание-3":
-#             DZ.dz3(bot, chat_id)
-#
-#         elif ms_text == "Задание-4":
-#             DZ.dz4(bot, chat_id)
-#
-#         elif ms_text == "Задание-5":
-#             DZ.dz5(bot, chat_id, message)
-#
-#         elif ms_text == "Задание-6":
-#             DZ.dz6(bot, chat_id, message)
-#
-#         elif ms_text == "Задание-7":
-#             DZ.dz7(bot, chat_id, message)
-#
-#         elif ms_text == "Задание-8":
-#             DZ.dz8(bot, chat_id, message)
-#
-#
-#     else:  # ...........................................................................................................
-#         bot.send_message(chat_id, text="Мне жаль, я не понимаю вашу команду: " + ms_text)
-#         goto_menu(chat_id, "Главное меню")
-
-# Получение сообщений от юзера
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     chat_id = message.chat.id
@@ -266,7 +162,7 @@ def get_text_messages(message):
         elif subMenu.name == "Города":
 
             citygame = BotGames.newGame(chat_id, BotGames.CITY(message, bot))
-            msg = bot.send_message(chat_id, "Играем в города России, вы начинаете!")
+            msg = bot.send_message(chat_id, "Играем в города России, вы начинаете на букву А!")
             bot.register_next_step_handler(msg, citygame.citygameTrue)
 
 

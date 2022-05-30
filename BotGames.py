@@ -6,6 +6,8 @@ import menuBot
 from menuBot import Menu, goto_menu
 import random
 import json
+import wikipedia, re
+wikipedia.set_lang("ru")
 # -----------------------------------------------------------------------
 # вместо того, что бы делать еще один класс, обойдёмся без него - подумайте, почему и как
 activeGames = {}  # Тут будем накапливать все активные игры. У пользователя может быть только одна активная игра
@@ -243,11 +245,35 @@ class CITY:
             for j in self.gor:
                 if self.abc[i] == j[0].lower():
                     self.city_double[i].append(j)
+
+
+        from datetime import  datetime, date, time
+        from openpyxl import  load_workbook
+        file = 'game_progress.xlsx'
+        wb = load_workbook(file)
+        if str(message.from_user.id) in wb.sheetnames:
+            ws = wb[str(message.from_user.id)]
+        else:
+            ws = wb.create_sheet(str(message.from_user.id))
+        ws.append(['история игры'])
+        ws.append([str(datetime.now(tz=None))])
+        wb.save(file)
+        wb.close()
+
+
         # начало игры:
 
-    def citygameTrue(self, message):
+    def citygameTrue(self, message, random_choice = "а"):
         # игрок
+        self.random_choice = random_choice
         self.message = message
+        if random_choice[-1] == 'ъ' or random_choice[-1] == 'ы' or random_choice[-1] == 'ь' or random_choice[-1] == 'ё':
+            number_comp = self.abc.index(random_choice[-2].lower())
+        else:
+            number_comp = self.abc.index(random_choice[-1].lower())
+
+
+        #print(random_choice, number_comp)
         if self.message.text == "Выход":
             CITY.stop(self)
             return
@@ -264,8 +290,47 @@ class CITY:
                     number = self.abc.index(city[-1].lower())
                     number1 = self.abc.index(city[0].lower())
 
-                if city in self.city_double[number1]:
+                from openpyxl import load_workbook
+                file = 'game_progress.xlsx'
+                wb = load_workbook(file)
+                #name_list = wb.sheetnames
+                #ws = wb[name_list[-1]]
+                ws = wb[str(message.from_user.id)]
+                ws.append(['', city])
+                wb.save(file)
+                wb.close()
+
+                #print(city[0].lower())
+                if city in self.city_double[number1] and number_comp == number1:
+
+
                     self.city_double[number1].pop(self.city_double[number1].index(city))
+
+                    if city == 'Остров':
+                        n = " Город "
+                    else:
+                        n = " "
+                    s = n + str(city)
+                    try:
+                        ny = wikipedia.page(s)
+                        wikitext = ny.content[:1000]
+                        wikimas = wikitext.split('.')
+                        wikimas = wikimas[:-1]
+                        wikitext2 = ''
+                        for x in wikimas:
+                            if not ('==' in x):
+                                if (len((x.strip())) > 3):
+                                    wikitext2 = wikitext2 + x + '.'
+                            else:
+                                break
+                        wikitext2 = re.sub('\([^()]*\)', '', wikitext2)
+                        wikitext2 = re.sub('\([^()]*\)', '', wikitext2)
+                        wikitext2 = re.sub('{[^\{\}]*\)', '', wikitext2)
+                        ans = wikitext2
+                    except Exception as e:
+                        ans = 'В энциклопедии нет информации об этом'
+
+                    self.bot.send_message(message.chat.id, ans)
 
                 else:
                     ans = "Игрок проиграл"
@@ -280,9 +345,47 @@ class CITY:
                 else:
                     random_choice = 'Error'
 
+                from openpyxl import load_workbook
+                file = 'game_progress.xlsx'
+                wb = load_workbook(file)
+                #name_list = wb.sheetnames
+                #ws = wb[name_list[-1]]
+                ws = wb[str(message.from_user.id)]
+                ws.append(['', random_choice])
+                wb.save(file)
+                wb.close()
+
                 # исключаем его выбор
                 if random_choice in self.city_double[number]:
                     self.city_double[number].pop(self.city_double[number].index(random_choice))
+
+                    #print(random_choice)
+                    if random_choice == 'Остров':
+                        n = " Город "
+                    else:
+                        n = " "
+                    s = n + str(random_choice)
+                    try:
+                        ny = wikipedia.page(s)
+                        wikitext = ny.content[:1000]
+                        wikimas = wikitext.split('.')
+                        wikimas = wikimas[:-1]
+                        wikitext2 = ''
+                        for x in wikimas:
+                            if not ('==' in x):
+                                if (len((x.strip())) > 3):
+                                    wikitext2 = wikitext2 + x + '.'
+                            else:
+                                break
+                        wikitext2 = re.sub('\([^()]*\)', '', wikitext2)
+                        wikitext2 = re.sub('\([^()]*\)', '', wikitext2)
+                        wikitext2 = re.sub('{[^\{\}]*\)', '', wikitext2)
+                        ans = wikitext2
+                    except Exception as e:
+                        ans = 'В энциклопедии нет информации об этом'
+
+                    self.bot.send_message(message.chat.id, ans)
+
 
                 else:
                     ans = "Бот проиграл"
@@ -290,7 +393,7 @@ class CITY:
                     CITY.stop(self)
                     return
 
-                self.bot.register_next_step_handler(msg, self.citygameTrue)
+                self.bot.register_next_step_handler(msg, self.citygameTrue, random_choice)
             except Exception:
                 msg = self.bot.send_message(self.message.chat.id, text="ERROR 404")
                 self.bot.register_next_step_handler(msg, self.citygameTrue)
@@ -298,7 +401,6 @@ class CITY:
     def stop(self):
         stopGame(self.message.chat.id)
         menuBot.goto_menu(self.bot, self.message.chat.id, 'Выход')
-
 
 
 # -----------------------------------------------------------------------

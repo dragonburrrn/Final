@@ -2,7 +2,6 @@
 import requests
 import bs4  # BeautifulSoup4
 from telebot import types
-from io import BytesIO
 
 import wikipedia, re
 wikipedia.set_lang("ru")
@@ -179,6 +178,6 @@ def get_randomFilm():
 #-------------------------------------------------------------------------
 def get_animeURL():
 
-    url = 'https://thisanimedoesnotexist.ai/results/psi-' + str(random.randint(10, 14) * 0.1 ) + '/seed' + str(random.randint(10000, 99999)) + '.png'
+    url = 'https://thisanimedoesnotexist.ai/results/psi-' + str(random.randint(10, 12) * 0.1 ) + '/seed' + str(random.randint(10000, 99999)) + '.png'
     return url
 

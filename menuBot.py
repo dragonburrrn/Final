@@ -32,7 +32,7 @@ class Menu:
     hash = {}  # тут будем накапливать все созданные экземпляры класса
     cur_menu = {}  # тут будет находиться текущий экземпляр класса, текущее меню для каждого пользователя
     extendedParameters = {}  # это место хранения дополнительных параметров для передачи в inline кнопки
-    namePickleFile = "bot_curMe.plk"
+    namePickleFile = "bot_curMenu.plk"
 
     # ПЕРЕПИСАТЬ для хранения параметров привязанных к chat_id и названию кнопки
     def __init__(self, name, buttons=None, parent=None, module=""):
